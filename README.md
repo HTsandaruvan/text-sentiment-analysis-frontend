@@ -24,7 +24,7 @@ It allows users to input text, analyze sentiment using an ML model, and view ana
 - **API Integration:** Fetching data from Flask backend  
 - **Deployment:** Vercel  
 
-## ⚡ Installation & Setup
+### ⚡ Installation & Setup
 # 1️⃣ Clone the Repository
 
 # git clone https://github.com/yourusername/text-sentiment-analysis-frontend.git
