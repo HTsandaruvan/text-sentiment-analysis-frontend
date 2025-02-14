@@ -25,30 +25,30 @@ It allows users to input text, analyze sentiment using an ML model, and view ana
 - **Deployment:** Vercel  
 
 ### ⚡ Installation & Setup
-# 1️⃣ Clone the Repository
+###  1️⃣ Clone the Repository
 
-# git clone https://github.com/yourusername/text-sentiment-analysis-frontend.git
+### git clone https://github.com/yourusername/text-sentiment-analysis-frontend.git
 ```sh
 cd text-sentiment-analysis-frontend
 ```
 
-# 2️⃣ Install Dependencies
+###  2️⃣ Install Dependencies
 ```sh
 
 npm install
 ```
 
-# 3️⃣ Configure Environment Variables
-# Create a .env.local file in the root directory and add:
+###  3️⃣ Configure Environment Variables
+###  Create a .env.local file in the root directory and add:
 
 ```sh
 NEXT_PUBLIC_API_URL=http://localhost:5001  # Flask backend URL
 
 ```
 
-# 4️⃣ Run the Project Locally
+###  4️⃣ Run the Project Locally
 ```sh
 npm run dev
 
 ```
-## Your app will run at http://localhost:3000 🚀
+###  Your app will run at http://localhost:3000 🚀
