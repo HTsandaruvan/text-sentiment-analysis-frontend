@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# **Text Sentiment Analysis - Frontend**
 
-## Getting Started
+## 📌 Project Description  
+This is the frontend for the **Text Sentiment Analysis** project, built with **Next.js (React)** and styled using **TailwindCSS** and **ShadCN**.  
+It allows users to input text, analyze sentiment using an ML model, and view analysis history. The application features **role-based authentication** (User/Admin) and a fully responsive UI.  
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Features  
+- ✅ **User Authentication** (Sign-up, Login, JWT-based auth)  
+- ✅ **Role-Based Access Control** (User/Admin dashboard)  
+- ✅ **Text Sentiment Analysis** (API integration with Flask backend)  
+- ✅ **History Management** (View previous analyses)
+- ✅ **User Management** (View ,edit, delete, give role)  
+- ✅ **Fully Mobile Responsive UI** (TailwindCSS + ShadCN)  
+
+---
+
+## 🛠 Tech Stack  
+- **Frontend:** React (Next.js)
+- **State Management:** Context API / Zustand  
+- **Styling:** TailwindCSS + ShadCN  
+- **Authentication:** JWT-based auth  
+- **API Integration:** Fetching data from Flask backend  
+- **Deployment:** Vercel  
+
+### ⚡ Installation & Setup
+###  1️⃣ Clone the Repository
+
+### git clone https://github.com/yourusername/text-sentiment-analysis-frontend.git
+```sh
+cd text-sentiment-analysis-frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+###  2️⃣ Install Dependencies
+```sh
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+###  3️⃣ Configure Environment Variables
+###  Create a .env.local file in the root directory and add:
 
-## Learn More
+```sh
+NEXT_PUBLIC_API_URL=http://localhost:5001  # Flask backend URL
 
-To learn more about Next.js, take a look at the following resources:
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+###  4️⃣ Run the Project Locally
+```sh
+npm run dev
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+###  Your app will run at http://localhost:3000 🚀
