@@ -1,19 +1,20 @@
-// components/UserTable.jsx
+"use client"
 
-"use client";
 import { useState, useEffect } from "react";
-import { fetchUsers, deleteUser, updateUserRole } from "@/lib/api";
-import Link from "next/link";
-import { toast } from "react-hot-toast"; // ✅ Import toast notifications
+import { fetchUsers, deleteUser } from "@/lib/api";
+import { toast } from "react-hot-toast";
+import EditUserForm from "./EditUserForm"; // ✅ Import the EditUserForm component
+import AddUserModal from "./AddUserForm"; // Import AddUserModal
 
 export default function UserTable() {
     const [users, setUsers] = useState([]);
+    const [editingUser, setEditingUser] = useState(null);
+    const [isAddingUser, setIsAddingUser] = useState(false);
 
     useEffect(() => {
         async function loadUsers() {
             try {
                 const { data } = await fetchUsers();
-                console.log("📢 Fetched Users:", data);
                 setUsers(data);
             } catch (error) {
                 console.error("❌ Error fetching users:", error.response?.data || error.message);
@@ -21,43 +22,62 @@ export default function UserTable() {
         }
         loadUsers();
     }, []);
-
-    const handleDelete = async (userId) => {
-        if (confirm("Are you sure you want to delete this user?")) {
-            toast.promise(
-                deleteUser(userId).then(() => {
-                    setUsers(users.filter(user => user._id !== userId));
-                }),
-                {
-                    loading: "Deleting user...",
-                    success: "User deleted successfully!",
-                    error: "Failed to delete user. Try again!",
-                }
-            );
-        }
-    };
-
-    const handleRoleChange = async (userId, newRole) => {
+    const loadUsers = async () => {
         try {
-            await updateUserRole(userId, newRole);
-            setUsers(users.map(user => user._id === userId ? { ...user, role: newRole } : user));
+            const { data } = await fetchUsers();
+            setUsers(data);
         } catch (error) {
-            console.error("❌ Error updating role:", error.response?.data || error.message);
+            console.error("❌ Error fetching users:", error.message);
         }
     };
+    const handleDelete = async (userId) => {
+        toast((t) => (
+            <div>
+                <p className="text-sm">Are you sure you want to delete this user?</p>
+                <div className="mt-2 flex justify-end gap-2">
+                    <button
+                        className="bg-red-500 text-white px-3 py-1 rounded text-sm"
+                        onClick={async () => {
+                            toast.dismiss(t.id);
+                            try {
+                                await deleteUser(userId);
+                                setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
+                                toast.success("User deleted successfully!");
+                            } catch (error) {
+                                toast.error("Failed to delete user. Try again!");
+                                console.error("Error deleting user:", error);
+                            }
+                        }}
+                    >
+                        Yes, Delete
+                    </button>
+                    <button
+                        className="bg-gray-300 px-3 py-1 rounded text-sm"
+                        onClick={() => toast.dismiss(t.id)}
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        ), { duration: 7000 });
+    };
+
 
     return (
         <div className="bg-white p-4 rounded-lg shadow overflow-x-auto">
             <div className="flex justify-between mb-4">
-                <h2 className="text-xl sm:text-2xl font-bold">User Management</h2>
-                <Link href="/admin/user-management/edit-user">
-                    <button className="bg-green-500 text-white px-3 py-1 sm:px-4 sm:py-2 rounded">+ Add User</button>
-                </Link>
+                <h2 className="text-xl font-bold">User Management</h2>
+                <button
+                    onClick={() => setIsAddingUser(true)}
+                    className="bg-green-500 text-white px-4 py-2 rounded"
+                >
+                    + Add User
+                </button>
             </div>
 
             <table className="w-full border-collapse border border-gray-300 min-w-[600px]">
                 <thead>
-                    <tr className="bg-gray-200 text-sm sm:text-base">
+                    <tr className="bg-gray-200">
                         <th className="border p-2">Name</th>
                         <th className="border p-2">Email</th>
                         <th className="border p-2">Role</th>
@@ -66,26 +86,20 @@ export default function UserTable() {
                 </thead>
                 <tbody>
                     {users.map((user) => (
-                        <tr key={user._id} className="text-center text-xs sm:text-sm">
+                        <tr key={user._id} className="text-center">
                             <td className="border p-2">{user.name}</td>
                             <td className="border p-2">{user.email}</td>
+                            <td className="border p-2">{user.role}</td>
                             <td className="border p-2">
-                                <select
-                                    value={user.role}
-                                    onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                                    className="border p-1 rounded"
+                                <button
+                                    onClick={() => setEditingUser(user)}
+                                    className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
                                 >
-                                    <option value="user">User</option>
-                                    <option value="admin">Admin</option>
-                                </select>
-                            </td>
-                            <td className="border p-2">
-                                <Link href={`/admin/user-management/edit-user?id=${user._id}`}>
-                                    <button className="bg-blue-500 text-white px-2 sm:px-3 py-1 rounded mr-2">Edit</button>
-                                </Link>
+                                    Edit
+                                </button>
                                 <button
                                     onClick={() => handleDelete(user._id)}
-                                    className="bg-red-500 text-white px-2 sm:px-3 py-1 rounded"
+                                    className="bg-red-500 text-white px-3 py-1 rounded"
                                 >
                                     Delete
                                 </button>
@@ -94,6 +108,15 @@ export default function UserTable() {
                     ))}
                 </tbody>
             </table>
+
+            {editingUser && <EditUserForm userId={editingUser._id} onClose={() => setEditingUser(null)} onUpdate={loadUsers} // Reload table after update
+            />}
+            {isAddingUser && (
+                <AddUserModal
+                    onClose={() => setIsAddingUser(false)}
+                    onUserAdded={loadUsers}
+                />
+            )}
         </div>
     );
 }

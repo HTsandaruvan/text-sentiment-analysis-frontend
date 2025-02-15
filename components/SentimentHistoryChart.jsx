@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { fetchAdminUserSentimentHistory, fetchUsers } from "@/lib/api";
 import { Line } from "react-chartjs-2";
+import { toast } from "react-hot-toast";
 
 import {
     Chart as ChartJS,
@@ -29,6 +30,7 @@ export default function SentimentHistoryChart() {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState("");
     const [sentimentHistory, setSentimentHistory] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         async function loadUsers() {
@@ -41,13 +43,23 @@ export default function SentimentHistoryChart() {
     useEffect(() => {
         async function loadSentimentHistory() {
             if (selectedUser) {
+                setLoading(true);
+                setSentimentHistory([]); // Clear previous data
+
                 try {
-                    console.log("📡 Fetching sentiment history for user:", selectedUser);
+                    //console.log("📡 Fetching sentiment history for user:", selectedUser);
                     const { data } = await fetchAdminUserSentimentHistory(selectedUser);
-                    console.log("✅ Received sentiment history:", data);
+                    //console.log("✅ Received sentiment history:", data);
+
+                    if (data.length === 0) {
+                        toast.error("No sentiment history found for this user.");
+                    }
+
                     setSentimentHistory(data);
                 } catch (error) {
-                    console.error("❌ Error fetching sentiment history:", error);
+                    toast.error("Error fetching sentiment history. Please try again.");
+                } finally {
+                    setLoading(false);
                 }
             }
         }
@@ -63,12 +75,9 @@ export default function SentimentHistoryChart() {
                 fill: false,
                 borderColor: "blue",
                 tension: 0.1,
-                fill: false,
             },
         ],
-
     };
-
 
     return (
         <div className="max-w-4xl mx-auto mt-6 p-4 bg-white shadow-md rounded-lg">
@@ -88,13 +97,14 @@ export default function SentimentHistoryChart() {
                 ))}
             </select>
 
+            {/* Loading State */}
+            {loading && <p className="text-center text-blue-500">Loading sentiment history...</p>}
+
             {/* Sentiment Chart */}
-            {selectedUser && sentimentHistory.length > 0 ? (
+            {selectedUser && sentimentHistory.length > 0 && (
                 <div className="w-full">
                     <Line data={chartData} />
                 </div>
-            ) : (
-                <p className="text-center">No sentiment history available.</p>
             )}
 
             {/* Sentiment History Table */}
@@ -113,7 +123,7 @@ export default function SentimentHistoryChart() {
                             <tbody>
                                 {sentimentHistory.map((entry, index) => (
                                     <tr key={index} className="hover:bg-gray-100">
-                                        <td className="border border-gray-300 px-4 py-2">{entry.date}</td>
+                                        <td className="border border-gray-300 px-4 py-2">{entry.createdAt}</td>
                                         <td className="border border-gray-300 px-4 py-2">{entry.text}</td>
                                         <td className="border border-gray-300 px-4 py-2">{entry.confidence}</td>
                                     </tr>

@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
-import { getUser, logout } from "@/lib/auth";
+import { logout } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,9 +12,8 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import { motion } from "framer-motion";
-
 
 export default function Navbar() {
     const [user, setUser] = useState(null);
@@ -23,12 +22,16 @@ export default function Navbar() {
     useEffect(() => {
         const fetchUser = () => {
             const storedUser = localStorage.getItem("user");
+            //console.log("stored Data: ", storedUser)
+
+
+
             if (storedUser) {
                 setUser(JSON.parse(storedUser));
             }
         };
 
-        fetchUser(); // ✅ Fetch on mount
+        fetchUser(); // ✅ Fetch user data on mount
 
         // ✅ Listen for profile update event
         const handleUserUpdate = () => {
@@ -43,21 +46,17 @@ export default function Navbar() {
         };
     }, []);
 
-
-    const Button2 = ({ children }) => {
-        return (
-
-            <Link href="/auth/login" passHref>
-                <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="px-6 py-3 text-white font-semibold rounded-lg shadow-md transition-all bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700"
-                >
-                    {children}
-                </motion.div>
-            </Link>
-        );
-    };
+    const Button2 = ({ children }) => (
+        <Link href="/auth/login" passHref>
+            <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="px-6 py-3 text-white font-semibold rounded-lg shadow-md transition-all bg-gradient-to-r from-lime-500 to-green-600 hover:from-lime-600 hover:to-green-700"
+            >
+                {children}
+            </motion.div>
+        </Link>
+    );
 
     const handleLogout = () => {
         logout();
@@ -66,25 +65,38 @@ export default function Navbar() {
         window.dispatchEvent(new Event("userUpdated")); // ✅ Notify other components
         router.push("/auth/login");
     };
+
     return (
         <nav className="bg-gray-900 text-white p-4 fixed top-0 left-0 w-full shadow-md z-50">
             <div className="container mx-auto flex justify-between items-center">
                 {/* Right side logo */}
                 <Link href="/" className="text-lg font-bold mr-1">Sentiment Analysis</Link>
+
                 {/* Left side links */}
                 <div className="flex items-center gap-x-6">
-
                     {user ? (
                         <>
                             {user.role === "user" && <Link href="/sentiment">Analyze</Link>}
                             {user.role === "admin" && <Link href="/admin">Admin</Link>}
                             <div className="relative">
-                                <DropdownMenu className="bg-white">
+                                <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                                             <Avatar className="h-10 w-10 border-2 border-blue-500">
-                                                <AvatarImage src={user?.profilePicture || "https://github.com/shadcn.png"} />
-                                                <AvatarFallback>CN</AvatarFallback>
+                                                <AvatarImage
+                                                    src={user.profilePicture}
+                                                    alt="User Profile"
+                                                />
+                                                <AvatarFallback>
+                                                    <p className="text-sm font-medium leading-none text-primary-400">
+                                                        {user?.name
+                                                            ? user.name
+                                                                .split(" ") // Split the full name by space
+                                                                .map((n) => n.charAt(0).toUpperCase()) // Get first letters
+                                                                .join("") // Join them together
+                                                            : ""}
+                                                    </p>
+                                                </AvatarFallback>
                                             </Avatar>
                                         </Button>
                                     </DropdownMenuTrigger>
@@ -101,7 +113,9 @@ export default function Navbar() {
                                             </div>
                                         </DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem><Link href="/dashboard" className="block">Profile</Link></DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                            <Link href="/dashboard" className="block">Profile</Link>
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem>
                                             <Link href="/dashboard" className="block">Dashboard</Link>
                                         </DropdownMenuItem>
@@ -117,17 +131,13 @@ export default function Navbar() {
                         </>
                     ) : (
                         <>
-
                             <div className="flex space-x-4">
-
                                 <Button2>Login</Button2>
                             </div>
                         </>
                     )}
                 </div>
-
             </div>
         </nav>
-
     );
 }
